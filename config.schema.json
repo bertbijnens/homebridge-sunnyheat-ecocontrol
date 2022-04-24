@@ -1,5 +1,5 @@
 {
-  "pluginAlias": "ExampleHomebridgePlugin",
+  "pluginAlias": "SunnyheatEcocontrol",
   "pluginType": "platform",
   "singular": true,
   "schema": {

@@ -1,16 +1,16 @@
 {
-  "private": true,
-  "displayName": "Homebrdige SunnyHeat Ecocontrol",
+  "private": false,
+  "displayName": "Homebridge SunnyHeat Ecocontrol",
   "name": "homebridge-sunnyheat-ecocontrol",
-  "version": "2.0.0",
+  "version": "0.1.5",
   "description": "",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",
-    "url": "git://github.com/USERNAME/GITHUB_PROJECT_NAME.git"
+    "url": "git://github.com/bertbijnens/homebridge-sunnyheat-ecocontrol.git"
   },
   "bugs": {
-    "url": "https://github.com/USERNAME/GITHUB_PROJECT_NAME/issues"
+    "url": "https://github.com/bertbijnens/homebridge-sunnyheat-ecocontrol/issues"
   },
   "engines": {
     "node": ">=14.18.1",
@@ -21,14 +21,13 @@
     "lint": "eslint src/**.ts --max-warnings=0",
     "watch": "npm run build && npm link && nodemon",
     "build": "rimraf ./dist && tsc",
-    "prepublishOnly": "npm run lint && npm run build"
+    "prepublishOnly": "npm run build"
   },
   "keywords": [
     "homebridge-plugin"
   ],
   "dependencies": {
-    "local-devices": "^3.2.0",
-    "mdns-listener-advanced": "^2.4.5"
+    "node-dns-sd": "^0.4.2"
   },
   "devDependencies": {
     "@types/node": "^16.10.9",

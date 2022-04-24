@@ -50,43 +50,74 @@ export class ExampleHomebridgePlatform implements DynamicPlatformPlugin {
    * must not be registered again to prevent "duplicate UUID" errors.
    */
   discoverDevices() {
+    try {
+      const mDnsSd = require('node-dns-sd');
 
+      mDnsSd.discover({
+        name: '_services._dns-sd._udp.local',
+        type: 'PTR',
+        key: 'fqdn',
+      }).then((device_list) =>{
+        device_list.forEach((device) => {
 
-    const http = require('http');
-
-    const host = 'esp32_mesh.local';
-    const options = {
-      host: host,
-      path: '/mesh_info',
-
-      headers: {},
-    };
-
-    http.request(options, (response) => {
-      let str = '';
-
-      //another chunk of data has been received, so append it to `str`
-      response.on('data', (chunk) => {
-        str += chunk;
+          if(device.fqdn == '_mesh-http._tcp.local') {
+            this.validateDeviceIp(device.address);
+          }
+        });
+      }).catch((error) => {
+        this.log.error(error);
       });
+    } catch(e) {
+      this.log.error(JSON.stringify(e));
+    }
 
-      //the whole response has been received, so we just print it out here
-      response.on('end', () => {
+    /*
+    "address": "192.168.0.27",
+    "fqdn": "_mesh-http._tcp.local",
+    "modelName": null,
+    "familyName": null,
+    "service": null,
+    */
+  }
 
-        const data = JSON.parse(str);
+  validateDeviceIp(host) {
+    try {
+      const http = require('http');
 
-        this.log.info(data, typeof data, response.headers);
+      const options = {
+        host: host,
+        path: '/mesh_info',
 
-        if(data && typeof data === 'object' && data.status_code === 0) {
-          this.discoveredDevice({
-            host: host,
-            id: response.headers['mesh-node-num'],
-            mac: response.headers['mesh-node-mac'],
-          });
-        }
-      });
-    }).end();
+        headers: {},
+      };
 
+      http.request(options, (response) => {
+        let str = '';
+
+        //another chunk of data has been received, so append it to `str`
+        response.on('data', (chunk) => {
+          str += chunk;
+        });
+
+        //the whole response has been received, so we just print it out here
+        response.on('end', () => {
+
+          const data = JSON.parse(str);
+
+          this.log.info(data, typeof data, response.headers);
+
+          if(data && typeof data === 'object' && data.status_code === 0) {
+            this.discoveredDevice({
+              host: host,
+              id: response.headers['mesh-node-num'],
+              mac: response.headers['mesh-node-mac'],
+            });
+          }
+        });
+      }).end();
+    } catch(e) {
+      this.log.warn('threw error when looking for esp32_mesh.local');
+    }
   }
 
   discoveredDevice(device) {
